@@ -1,17 +1,20 @@
-# API Hospedaje - Registro e Inicio de Sesión
+# 🏨 API de Reservas de Hospedaje
+## 👤 Autor
+Oscar Tunjano
 
-## Scripts
-- `npm install`
-- `npm run dev` (desarrollo con nodemon)
-- `npm start` (producción)
 
-## Variables de entorno (.env)
-```
-PORT=4000
-MONGODB_URI=mongodb://127.0.0.1:27017/hospedajeDB
-JWT_SECRET=supersecreto_cambia_esto
-```
+Proyecto: API REST para autenticación (registro e inicio de sesión) para el sistema de reservas.
 
-## Endpoints
-- POST `/api/register`
-- POST `/api/login`
+## 🚀 Tecnologías utilizadas
+- Node.js, Express
+- MongoDB (Mongoose)
+- JWT para autenticación
+- bcryptjs para hashing de contraseñas
+
+## 📦 Instalación (local)
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/Oscar-Tunjano/alquiler-hospedajes-sm-api.git
+   cd alquiler-hospedajes-sm-api
+
+
