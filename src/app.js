@@ -6,6 +6,9 @@ const app = express();
 app.use(cors());             // permitir peticiones desde el navegador
 app.use(express.json());     // parseo JSON body
 
+// Exportar la app para que server.js la use
+module.exports = app;
+
 // almacenamiento en memoria (para pruebas rápidas)
 const reservas = [];
 
@@ -49,4 +52,4 @@ app.get('/api/reservas/:usuarioId', authMiddleware, (req, res) => {
   res.json(userReservas);
 });
 
-module.exports = app;
+
