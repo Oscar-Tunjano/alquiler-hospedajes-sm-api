@@ -1,99 +1,43 @@
+// controllers/auth.controller.js
+const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const User = require("../models/user.model"); // ajusta la ruta si tu modelo está en otra carpeta
 
-// 🔑 Función para generar token
-function generarToken(user) {
-  return jwt.sign(
-    { id: user._id, email: user.email }, 
-    process.env.JWT_SECRET,      // viene del archivo .env
-    { expiresIn: "1h" }          // el token expira en 1 hora
-  );
-}
-
-// 📌 Registro
-exports.register = async (req, res) => {
+const registerUser = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    // Validar campos
-    if (!nombre || !email || !password) {
-      return res.status(400).json({ message: "Todos los campos son obligatorios" });
-    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "Usuario ya registrado" });
 
-    // Verificar si el usuario ya existe
-    const usuarioExistente = await User.findOne({ email });
-    if (usuarioExistente) {
-      return res.status(400).json({ message: "El email ya está registrado" });
-    }
-
-    // Encriptar la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Crear usuario
-    const nuevoUsuario = new User({
-      nombre,
-      email,
-      password: hashedPassword,
-    });
-
-    await nuevoUsuario.save();
-
-    // Generar token
-    const token = generarToken(nuevoUsuario);
-
-    res.status(201).json({
-      message: "Usuario registrado correctamente",
-      user: {
-        id: nuevoUsuario._id,
-        nombre: nuevoUsuario.nombre,
-        email: nuevoUsuario.email,
-      },
-      token,
-    });
-  } catch (error) {
-    console.error("Error en register:", error);
-    res.status(500).json({ message: "Error en el servidor" });
+    const newUser = await User.create({ username, email, password });
+    res.status(201).json({ message: "Usuario registrado", user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: "Error al registrar usuario", error: err.message });
   }
 };
 
-// 📌 Login
-exports.login = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Validar campos
-    if (!email || !password) {
-      return res.status(400).json({ message: "Todos los campos son obligatorios" });
-    }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Contraseña incorrecta" });
 
-    // Verificar usuario
-    const usuario = await User.findOne({ email });
-    if (!usuario) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
-    }
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    // Comparar contraseñas
-    const isMatch = await bcrypt.compare(password, usuario.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
-    }
-
-    // Generar token
-    const token = generarToken(usuario);
-
-    res.json({
-      message: "Login exitoso",
-      user: {
-        id: usuario._id,
-        nombre: usuario.nombre,
-        email: usuario.email,
-      },
-      token,
-    });
-  } catch (error) {
-    console.error("Error en login:", error);
-    res.status(500).json({ message: "Error en el servidor" });
+    res.json({ message: "Login exitoso", token });
+  } catch (err) {
+    res.status(500).json({ message: "Error al hacer login", error: err.message });
   }
 };
+
+module.exports = { registerUser, loginUser };

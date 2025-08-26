@@ -2,7 +2,7 @@
 // Guarda nombre, email único y contraseña hasheada.
 
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -19,8 +19,8 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'La contraseña es obligatoria'],
-      minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
+      required: true,
+      minlength: 6, 
       select: false // por seguridad, no se devuelve por defecto
     }
   },
@@ -41,3 +41,5 @@ UserSchema.methods.compararPassword = function (passwordPlana) {
 };
 
 module.exports = mongoose.model('User', UserSchema);
+
+

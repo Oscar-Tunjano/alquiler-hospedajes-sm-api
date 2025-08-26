@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pruebas API Reservas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #74ebd5, #ACB6E5);
+    color: #333;
+    margin: 20px;
+  }
+
+  fieldset {
+    border: 2px solid #4CAF50;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  legend {
+    font-weight: bold;
+    color: #4CAF50;
+    font-size: 1.2em;
+  }
+
+  button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #45a049;
+  }
+
+  input {
+    margin: 5px 0;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  pre {
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .icono {
+    width: 40px;
+    vertical-align: middle;
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+
+
+    :root{
+      --primary:#2980b9;
+      --primary-700:#1e5799;
+      --bg1:#74ebd5; --bg2:#ACB6E5;
+      --card:#ffffff; --muted:#f4f4f4; --text:#2c3e50;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color:var(--text);
+    }
+    header{
+      background: var(--card);
+      padding: 24px 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.12);
+      position: sticky; top:0; z-index: 10;
+    }
+    header h1{margin:0; color:var(--primary); font-size: 24px;}
+    header p{margin:.25rem 0 0; opacity:.8}
+    .wrap{
+      max-width: 1100px; margin: 24px auto; padding: 0 16px;
+      display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    @media (max-width: 900px){ .wrap{grid-template-columns: 1fr} }
+
+    fieldset{
+      margin:0; border:none; border-radius:16px; background:var(--card);
+      padding: 18px 18px 16px; box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      position: relative; overflow: hidden;
+    }
+    legend{
+      font-weight:700; color:var(--primary); margin-bottom: 6px; padding:0;
+    }
+    label{display:block; margin-top:10px; font-weight:600;}
+    input, textarea{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #dce1e6; margin-top:6px;
+      font-size: 15px; outline: none; transition: .2s;
+      background:#fff;
+    }
+    input:focus, textarea:focus{ border-color: var(--primary); box-shadow: 0 0 0 3px #2980b933; }
+    textarea{resize: vertical; min-height: 90px}
+
+    button{
+      margin-top:12px; padding:10px 14px; border:none; border-radius:10px;
+      background: var(--primary); color:#fff; font-weight:700; cursor:pointer; width:100%;
+      transition: .2s;
+    }
+    button:hover{ background: var(--primary-700); transform: translateY(-1px); }
+    .btn-secondary{ background:#16a085; }
+    .btn-secondary:hover{ background:#107a66; }
+
+    .resultado{
+      background:#0f172a; color:#e5e7eb; border-radius:12px;
+      padding:12px; margin-top:12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap; word-break: break-word; overflow:auto; max-height: 260px;
+    }
+
+    .icono{
+      position:absolute; right:12px; top:12px; width:42px; height:42px; object-fit:contain; opacity:.9;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.18));
+    }
+    .row-1-1{ grid-column: 1 / -1; } /* ancho completo */
+
+    .tip{
+      background: #fff8e1; border-left: 4px solid #f39c12; padding: 10px 12px; border-radius: 8px; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏡 Pruebas API Reservas</h1>
+    <p>Haz login, registra usuarios y prueba el CRUD de reservas — todo desde el navegador.</p>
+  </header>
+
+  <div class="wrap">
+    <!-- REGISTRO -->
+    <fieldset>
+      <legend>📝 Registro (Signup)</legend>
+      <img class="icono" src="assets/icon-user.png" alt="Usuario" />
+      <label>Nombre</label>
+      <input id="signupNombre" type="text" placeholder="Ej: Oscar" />
+      <label>Email</label>
+      <input id="signupEmail" type="email" placeholder="tucorreo@ejemplo.com" />
+      <label>Contraseña</label>
+      <input id="signupPassword" type="password" placeholder="********" />
+      <button class="btn-secondary" onclick="signup()">Registrar Usuario</button>
+      <div id="signupOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- LOGIN -->
+    <fieldset>
+      <legend>🔑 Login</legend>
+      <img class="icono" src="assets/icon-login.png" alt="Login" />
+      <label>Email</label>
+      <input id="loginEmail" type="email" />
+      <label>Contraseña</label>
+      <input id="loginPassword" type="password" />
+      <button onclick="login()">Iniciar Sesión</button>
+
+      <label style="margin-top:14px;">Token JWT (se llena tras login)</label>
+      <input id="authToken" type="text" readonly />
+      <div class="tip" style="margin-top:10px">Si cambias de usuario, vuelve a iniciar sesión para renovar el token.</div>
+
+      <div id="loginOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- LISTAR RESERVAS -->
+    <fieldset>
+      <legend>📋 Listar Reservas</legend>
+      <img class="icono" src="assets/icon-reserva.png" alt="Reservas" />
+      <button onclick="listarReservas()">Obtener Reservas</button>
+      <div id="listOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- CREAR RESERVA -->
+    <fieldset>
+      <legend>➕ Crear Reserva</legend>
+      <img class="icono" src="assets/icon-security.png" alt="Crear" />
+      <label>Nombre Cliente</label>
+      <input id="createNombre" type="text" placeholder="Nombre del cliente" />
+      <label>Fecha</label>
+      <input id="createFecha" type="date" />
+      <label>Noches</label>
+      <input id="createNoches" type="number" min="1" value="1" />
+      <button onclick="crearReserva()">Crear Reserva</button>
+      <div id="createOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- ACTUALIZAR RESERVA (ancho completo para comodidad) -->
+    <fieldset class="row-1-1">
+      <legend>✏️ Actualizar Reserva</legend>
+      <img class="icono" src="assets/icon-reserva.png" alt="Editar" />
+      <div style="display:grid; gap:10px; grid-template-columns: repeat(4, minmax(0,1fr));">
+        <div>
+          <label>ID</label>
+          <input id="updateId" type="number" placeholder="ID existente" />
+        </div>
+        <div>
+          <label>Nombre</label>
+          <input id="updateNombre" type="text" placeholder="Nuevo nombre" />
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input id="updateFecha" type="date" />
+        </div>
+        <div>
+          <label>Noches</label>
+          <input id="updateNoches" type="number" min="1" />
+        </div>
+      </div>
+      <button onclick="actualizarReserva()">Actualizar</button>
+      <div id="updateOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- ELIMINAR RESERVA -->
+    <fieldset>
+      <legend>🗑️ Eliminar Reserva</legend>
+      <img class="icono" src="assets/icon-security.png" alt="Eliminar" />
+      <label>ID</label>
+      <input id="deleteId" type="number" placeholder="ID a eliminar" />
+      <button onclick="eliminarReserva()">Eliminar</button>
+      <div id="deleteOut" class="resultado"></div>
+    </fieldset>
+
+    <!-- AYUDA / DIAGNÓSTICO -->
+    <fieldset>
+      <legend>🧪 Diagnóstico rápido</legend>
+      <img class="icono" src="assets/icon-security.png" alt="Diag" />
+      <button onclick="probarImagenes()">Probar imágenes</button>
+      <button onclick="probarAPI()">Probar API (ping)</button>
+      <div id="diagOut" class="resultado"></div>
+    </fieldset>
+  </div>
+
+  <script>
+    // 👉 Ajusta sólo este bloque si tu backend usa otras rutas/puertos
+    const BASE = "http://localhost:4000/api";
+    const URLS = {
+      signup: `${BASE}/auth/register`,
+      login: `${BASE}/auth/login`,
+      reservas: `${BASE}/reservas`
+    };
+
+    let TOKEN = "";
+
+    // Utilidad: muestra JSON bonito o error legible
+    async function renderResponse(resp, outEl){
+      let txt = "";
+      try{
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok){
+          txt = `❌ HTTP ${resp.status}\n` + JSON.stringify(data || {error:"Sin cuerpo"}, null, 2);
+        }else{
+          txt = JSON.stringify(data, null, 2);
+        }
+      }catch(e){
+        txt = "❌ Error parseando respuesta: " + e.message;
+      }
+      document.getElementById(outEl).textContent = txt;
+    }
+
+    function authHeaders(){
+      return TOKEN ? { "Authorization": "Bearer " + TOKEN } : {};
+    }
+
+    // --- REGISTRO ---
+    async function signup(){
+      const nombre = document.getElementById("signupNombre").value.trim();
+      const email  = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value.trim();
+      if (!nombre || !email || !password){
+        return (document.getElementById("signupOut").textContent = "⚠️ Completa nombre, email y contraseña.");
+      }
+      const resp = await fetch(URLS.signup, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ nombre, email, password })
+      });
+      renderResponse(resp, "signupOut");
+    }
+
+    // --- LOGIN ---
+    async function login(){
+      const email  = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      if (!email || !password){
+        return (document.getElementById("loginOut").textContent = "⚠️ Ingresa email y contraseña.");
+      }
+      const resp = await fetch(URLS.login, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const out = document.getElementById("loginOut");
+      try{
+        const data = await resp.json();
+        out.textContent = JSON.stringify(data, null, 2);
+        if (resp.ok && data.token){
+          TOKEN = data.token;
+          document.getElementById("authToken").value = TOKEN;
+        }else{
+          TOKEN = ""; document.getElementById("authToken").value = "";
+        }
+      }catch(e){
+        out.textContent = "❌ Error interpretando respuesta: " + e.message;
+      }
+    }
+
+    // --- LISTAR ---
+    async function listarReservas(){
+      if (!TOKEN) return (document.getElementById("listOut").textContent = "🔒 Haz login para obtener el token.");
+      const resp = await fetch(URLS.reservas, { headers: { ...authHeaders() } });
+      renderResponse(resp, "listOut");
+    }
+
+    // --- CREAR ---
+    async function crearReserva(){
+      if (!TOKEN) return (document.getElementById("createOut").textContent = "🔒 Haz login para obtener el token.");
+      const nombre = document.getElementById("createNombre").value.trim();
+      const fecha  = document.getElementById("createFecha").value;
+      const noches = parseInt(document.getElementById("createNoches").value, 10) || 1;
+
+      const resp = await fetch(URLS.reservas, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", ...authHeaders() },
+        body: JSON.stringify({ nombre, fecha, noches })
+      });
+      renderResponse(resp, "createOut");
+    }
+
+    // --- ACTUALIZAR ---
+    async function actualizarReserva(){
+      if (!TOKEN) return (document.getElementById("updateOut").textContent = "🔒 Haz login para obtener el token.");
+      const id = document.getElementById("updateId").value;
+      const nombre = document.getElementById("updateNombre").value.trim();
+      const fecha  = document.getElementById("updateFecha").value || undefined;
+      const noches = document.getElementById("updateNoches").value ? parseInt(document.getElementById("updateNoches").value, 10) : undefined;
+
+      if (!id) return (document.getElementById("updateOut").textContent = "⚠️ Indica un ID.");
+
+      const body = {};
+      if (nombre) body.nombre = nombre;
+      if (fecha)  body.fecha  = fecha;
+      if (typeof noches === "number" && !Number.isNaN(noches)) body.noches = noches;
+
+      const resp = await fetch(`${URLS.reservas}/${id}`, {
+        method:"PUT",
+        headers:{ "Content-Type":"application/json", ...authHeaders() },
+        body: JSON.stringify(body)
+      });
+      renderResponse(resp, "updateOut");
+    }
+
+    // --- ELIMINAR ---
+    async function eliminarReserva(){
+      if (!TOKEN) return (document.getElementById("deleteOut").textContent = "🔒 Haz login para obtener el token.");
+      const id = document.getElementById("deleteId").value;
+      if (!id) return (document.getElementById("deleteOut").textContent = "⚠️ Indica un ID.");
+      const resp = await fetch(`${URLS.reservas}/${id}`, {
+        method:"DELETE",
+        headers:{ ...authHeaders() }
+      });
+      renderResponse(resp, "deleteOut");
+    }
+
+    // --- DIAGNÓSTICOS ---
+    function probarImagenes(){
+      const imgs = ["icon-login.png","icon-user.png","icon-reserva.png","icon-security.png"];
+      const results = [];
+      let pendientes = imgs.length;
+      imgs.forEach(n => {
+        const url = `assets/${n}?t=${Date.now()}`;
+        const img = new Image();
+        img.onload = () => { results.push(`✅ Cargó: ${url} (${img.naturalWidth}x${img.naturalHeight})`); done(); };
+        img.onerror = () => { results.push(`❌ No cargó: ${url} (revisa carpeta/nombre)`); done(); };
+        img.src = url;
+      });
+      function done(){
+        pendientes--; if (pendientes===0) document.getElementById("diagOut").textContent = results.join("\n");
+      }
+    }
+
+    async function probarAPI(){
+      try{
+        // pequeño ping: intentamos GET /reservas sin token a ver qué responde
+        const r = await fetch(URLS.reservas);
+        const text = await r.text();
+        document.getElementById("diagOut").textContent =
+          `GET ${URLS.reservas}\nHTTP ${r.status}\n${text.substring(0,500)}...`;
+      }catch(e){
+        document.getElementById("diagOut").textContent = "❌ No se pudo conectar al backend: " + e.message;
+      }
+    }
+  </script>
+</body>
+</html>

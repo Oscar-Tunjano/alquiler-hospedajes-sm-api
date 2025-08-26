@@ -1,0 +1,65 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Hospedajes – Front de prueba</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <h1>Servidor de Hospedajes funcionando 🚀</h1>
+  <p>Esta página se sirve desde <code>/public/index.html</code></p>
+
+  <hr />
+  <h2>Probar API desde la web</h2>
+
+  <h3>Registro</h3>
+  <form id="form-register">
+    <input type="text" name="nombre" placeholder="Nombre" required />
+    <input type="email" name="email" placeholder="email@dominio.com" required />
+    <input type="password" name="password" placeholder="Contraseña (mín 6)" required />
+    <button type="submit">Registrarme</button>
+  </form>
+  <pre id="out-register"></pre>
+
+  <h3>Login</h3>
+  <form id="form-login">
+    <input type="email" name="email" placeholder="email@dominio.com" required />
+    <input type="password" name="password" placeholder="Contraseña" required />
+    <button type="submit">Iniciar sesión</button>
+  </form>
+  <pre id="out-login"></pre>
+
+  <script>
+    const BASE = "";
+
+    // helper para POST JSON
+    async function postJson(url, data) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json().catch(() => ({}));
+      return { status: res.status, json };
+    }
+
+    // Registro
+    document.getElementById("form-register").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      const { status, json } = await postJson(${BASE}/api/auth/register, data);
+      document.getElementById("out-register").textContent =
+        "Status: " + status + "\\n" + JSON.stringify(json, null, 2);
+    });
+
+    // Login
+    document.getElementById("form-login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      const { status, json } = await postJson(${BASE}/api/auth/login, data);
+      document.getElementById("out-login").textContent =
+        "Status: " + status + "\\n" + JSON.stringify(json, null, 2);
+    });
+  </script>
+</body>
+</html>

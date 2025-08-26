@@ -9,7 +9,7 @@ Proyecto: API REST para autenticación (registro e inicio de sesión) para el si
 - Node.js, Express
 - MongoDB (Mongoose)
 - JWT para autenticación
-- bcryptjs para hashing de contraseñas
+- bcrypt para hashing de contraseñas
 
 ## 📦 Instalación (local)
 1. Clonar el repositorio:
